@@ -9,11 +9,15 @@ class App extends Component {
     super(props);
     this.state = {
       style: 'fitted',
+      checkingOut: false,
     };
   }
 
   handleStyleChange = (style) => {
     this.setState({style});
+  }
+  handleCheckout = (checkingOut) => () => {
+    this.setState({checkingOut});
   }
   render() {
     return (
@@ -29,10 +33,10 @@ class App extends Component {
         </PageHeader>
         <Row>
         <Col md={7} sm={6}>
-          <Shirt shirtStyle={this.state.style} />
+          <Shirt shirtStyle={this.state.style} disabled={this.state.checkingOut} />
         </Col>
         <Col md={5} sm={6}>
-          <Checkout onStyleChange={this.handleStyleChange} />
+          <Checkout onCheckout={this.handleCheckout(true)} onComplete={this.handleCheckout(false)} onStyleChange={this.handleStyleChange} />
         </Col>
         </Row>
       </Grid>

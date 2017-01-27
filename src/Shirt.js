@@ -7,11 +7,12 @@ import './Shirt.css';
 export default class extends React.Component {
   static propTypes = {
     shirtStyle: React.PropTypes.oneOf(['fitted', 'unisex']).isRequired,
+    disabled: React.PropTypes.bool,
   }
 
   componentDidMount() {
     const canvas = document.createElement('canvas');
-    canvas.style.width = '33%';
+    canvas.style.width = '30%';
     canvas.style.height = 'auto';
     const ctx = canvas.getContext('2d');
     ctx.font = "37px 'Chivo'";
@@ -22,8 +23,10 @@ export default class extends React.Component {
 
     const cb = () => {
       window.requestAnimationFrame(() => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillText(new Date().getTime() + '', 0, 0);
+        if (!this.props.disabled) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.fillText(new Date().getTime() + '', 0, 0);
+        }
         cb();
       });
     }
@@ -79,7 +82,7 @@ export default class extends React.Component {
         </svg>
         <div className="Shirt-price">
           <h2>
-            <Label bsStyle="primary"><strike>$25.00</strike> $19.85</Label>
+            <Label bsStyle="primary"><strike>$30.00</strike> $22.50</Label>
           </h2>
         </div>
       </div>

@@ -31,3 +31,13 @@
 .glyphicon-left {
   margin-right: 7px;
 }
+
+.Checkout-success {
+  padding-top: 20%;
+  font-size: 16px;
+  text-align: center;
+}
+.Checkout-success-title {
+  font-size: 20px;
+  font-weight: 600;
+}

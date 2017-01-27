@@ -1,11 +1,11 @@
 .Shirt {
   position: relative;
-  font-family: 'Chivo', sans-serif;
   letter-spacing: 0.7px;
   width: 100%;
 }
 
 .Shirt-time {
+  font-family: 'Chivo', sans-serif;
   position: absolute;
   top: 20%;
   color: #fff;

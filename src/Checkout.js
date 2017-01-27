@@ -1,25 +1,25 @@
 import React from 'react';
-import {FormGroup, FormControl, ControlLabel, Radio, Button, Glyphicon} from 'react-bootstrap';
+import {FormGroup, FormControl, HelpBlock, ControlLabel, Radio, Button, Glyphicon} from 'react-bootstrap';
+import CheckoutForm from './CheckoutForm';
 import './Checkout.css';
 
 export default class extends React.Component {
   static propTypes = {
     onStyleChange: React.PropTypes.func.isRequired,
+    onCheckout: React.PropTypes.func.isRequired,
+    onComplete: React.PropTypes.func.isRequired,
   }
 
   constructor(props) {
     super(props);
     this.state = {
-      address1: '',
-      address2: '',
-      state: '',
-      city: '',
-      zip: '',
-      style: 'fitted',
-      size: 'M',
       disabled: false,
+      orderId: null,
+      orderErrors: [],
     };
-
+    this.setupStripe();
+  }
+  setupStripe() {
     this._stripe = Stripe('pk_test_pn9edQ1LOK6zMJnLd9zYzqb2'); // eslint-disable-line
     this._cardField = this._stripe.elements().create('card', {
       classes: {
@@ -42,139 +42,61 @@ export default class extends React.Component {
       this.setState({error: payload.error});
     });
   }
-  componentDidMount() {
-    this._cardField.mount('.Stripe');
-  }
-  handleChange = (name) => (e) => {
-    if (name === 'style') {
-      this.props.onStyleChange(e.target.value);
-    }
-    this.setState({[name]: e.target.value});
-  }
-  handleSubmit = (ev) => {
-    ev.preventDefault();
+
+  handleSubmit = (data) => {
     this.setState({disabled: true});
+    this.props.onCheckout();
     this._stripe.createToken(this._cardField).then((token) => {
-      const {size, style, city, state, address1, address2, zip} = this.state;
-      return fetch('https://api.stripe.com/v1/tokens', {
+      return fetch('http://localhost:3002/order', {
         method: 'POST',
-        body: JSON.stringify({
-          shirt: {
-            artwork: document.querySelector('canvas').toDataURL(),
-            style,
-            size,
-          },
-          stripeToken: token.id,
-          address: {
-            city,
-            state,
-            address1,
-            address2,
-            zip,
-          },
-        }),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({...data, stripeToken: token.id}),
       });
     }).then((res) => {
       // TODO
-      console.log(res);
-      this.setState({disabled: false});
-    }, (err) => {
+      return res.json();
+    }).then((payload) => {
+      this.setState({disabled: false, orderId: payload.order, orderErrors: payload.issues || payload.orderIssues || []});
+    }).catch((err) => {
       // TODO
-      console.log(err);
+      console.log('got error', err);
       this.setState({disabled: false});
+      this.props.onComplete();
     });
   }
-
-  renderStyles() {
-    return (
-      <FormGroup controlId="style">
-        <ControlLabel>Shirt style</ControlLabel>
-        {[['fitted', 'Fitted (Bella Crew)'], ['unisex', 'Unisex V-neck (Canvas Triblend)']].map((style) => (
-          <Radio key={style[0]} name="style" value={style[0]} checked={this.state.style === style[0]} onChange={this.handleChange('style')}>
-            {style[1]}
-          </Radio>
-        ))}
-      </FormGroup>
-    );
+  handleReset = () => {
+    this.setState({orderId: null});
+    this.props.onComplete();
   }
-  renderSizes() {
+  renderForm() {
+    const {disabled, error, orderErrors} = this.state;
+    return <CheckoutForm onStyleChange={this.props.onStyleChange} onSubmit={this.handleSubmit} cardElement={this._cardField} disabled={disabled} error={error} orderErrors={orderErrors} />;
+  }
+  renderSuccess() {
     return (
-      <FormGroup controlId="size">
-        <ControlLabel>Shirt size</ControlLabel>
-        <br />
-        {['S', 'M', 'L', 'XL'].map((size) => (
-          <Radio key={size} name="size" value={size} onChange={this.handleChange('size')} checked={this.state.size === size} inline>
-            {size}
-          </Radio>
-        ))}
-      </FormGroup>
+      <div className="Checkout-success">
+        <p className="Checkout-success-title">
+          Congrats on your pretty cool shirt!
+        </p>
+        <p>
+          You should receive an email shortly with your order confirmation number.
+        </p>
+        <Button onClick={this.handleReset} bsStyle="primary" bsSize="large">
+          <Glyphicon glyph="heart" />{' '}
+          Get another shirt
+        </Button>
+      </div>
     );
   }
   render() {
-    const {disabled} = this.state;
-    return (
-      <form className="App-form" onSubmit={this.handleSubmit}>
-        {this.renderStyles()}
-        {this.renderSizes()}
-        <FormGroup controlId="address">
-          <ControlLabel>Shipping address</ControlLabel>
-          <FormControl
-            type="text"
-            name="address1"
-            value={this.state.address1}
-            placeholder="185 Berry St"
-            onChange={this.handleChange('address1')}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormControl
-            type="text"
-            name="address2"
-            value={this.state.address2}
-            placeholder="Suite 550"
-            onChange={this.handleChange('address2')}
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormControl
-            type="text"
-            name="city"
-            value={this.state.city}
-            placeholder="San Francisco"
-            onChange={this.handleChange('city')}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormControl
-            type="text"
-            name="state"
-            value={this.state.state}
-            placeholder="CA"
-            onChange={this.handleChange('state')}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormControl
-            type="text"
-            name="zip"
-            value={this.state.zip}
-            placeholder="94107"
-            onChange={this.handleChange('zip')}
-            required
-          />
-        </FormGroup>
-        <FormGroup controlId="card" validationState={this.state.error && 'error'}>
-          <ControlLabel>Card details</ControlLabel>
-          <div className="Stripe form-control" id="card" />
-        </FormGroup>
-        <Button type="submit" bsStyle="success" bsSize="large" disabled={disabled} block>
-          <Glyphicon glyph={disabled ? 'refresh' : 'shopping-cart'} bsClass={disabled ? 'spinning glyphicon' : 'glyphicon'} />{' '}
-          {disabled ? 'Processing...' : 'Buy now'}
-        </Button>
-      </form>
-    );
+    const {orderId} = this.state;
+    if (orderId) {
+      return this.renderSuccess();
+    } else {
+      return this.renderForm();
+    }
   }
 };
