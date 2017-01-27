@@ -49,7 +49,6 @@ const SIZES = {
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  res.header('Content-Type', 'application/json');
   next();
 });
 
@@ -59,6 +58,7 @@ const auth = {
 };
 
 app.post('/order', (req, res, next) => {
+  res.header('Content-Type', 'application/json');
   const {shirt, address, stripeToken, email} = req.body;
 
   // CREATE DESIGNID
@@ -111,7 +111,7 @@ app.post('/order', (req, res, next) => {
 
             if (err) {
               console.log('[Stripe error]', err);
-              return next(err);
+              return next({error: {message: err.message, type: err.type, code: err.code}});
             } else {
 
               // CREATE ORDERID

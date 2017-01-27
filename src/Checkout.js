@@ -4,6 +4,7 @@ import CheckoutForm from './CheckoutForm';
 import './Checkout.css';
 
 const STRIPE_KEY = process.env.NODE_ENV === 'production' ? 'pk_live_i8dM4Z7Z9yHAry8CUyfG2zzu' : 'pk_test_qCMrlL2cgZqc4jlUQH6WEyBS';
+const API_URL = process.env.NODE_ENV === 'production' ? '/order' : 'http://localhost:3002/order';
 
 export default class extends React.Component {
   static propTypes = {
@@ -49,7 +50,7 @@ export default class extends React.Component {
     this.setState({disabled: true});
     this.props.onCheckout();
     this._stripe.createToken(this._cardField).then((token) => {
-      return fetch('http://localhost:3002/order', {
+      return fetch(API_URL, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -61,7 +62,7 @@ export default class extends React.Component {
       // TODO
       return res.json();
     }).then((payload) => {
-      this.setState({disabled: false, orderId: payload.order, orderErrors: payload.issues || payload.orderIssues || []});
+      this.setState({disabled: false, orderId: payload.order, error: payload.error, orderErrors: payload.issues || payload.orderIssues || []});
     }).catch((err) => {
       // TODO
       console.log('got error', err);
