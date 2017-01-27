@@ -11,6 +11,7 @@ export default class extends React.Component {
       state: '',
       city: '',
       zip: '',
+      email: '',
       style: 'fitted',
       size: 'M',
     };
@@ -23,13 +24,14 @@ export default class extends React.Component {
   }
   handleSubmit = (ev) => {
     ev.preventDefault();
-    const {name, size, style, city, state, address1, address2, zip} = this.state;
+    const {name, size, style, city, state, address1, address2, zip, email} = this.state;
     this.props.onSubmit({
       shirt: {
         artwork: document.querySelector('canvas').toDataURL(),
         style,
         size,
       },
+      email,
       address: {
         name,
         city,
@@ -143,6 +145,17 @@ export default class extends React.Component {
             value={this.state.zip}
             placeholder="94107"
             onChange={this.handleChange('zip')}
+            required
+          />
+        </FormGroup>
+        <FormGroup controlId="email">
+          <ControlLabel>Email (for receipt)</ControlLabel>
+          <FormControl
+            type="email"
+            name="email"
+            value={this.state.email}
+            placeholder="michelle@stripe.com"
+            onChange={this.handleChange('email')}
             required
           />
         </FormGroup>

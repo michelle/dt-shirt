@@ -10,6 +10,8 @@ app.use(bodyParser.json({limit: '5mb'}));
 
 const SP_API = 'https://api.scalablepress.com/v2/';
 const SP_AUTH = process.env.SP_AUTH;
+const STRIPE_AUTH = process.env.STRIPE_AUTH;
+const stripe = require('stripe')(STRIPE_AUTH);
 
 // {
 //   shirt: {
@@ -57,7 +59,7 @@ const auth = {
 };
 
 app.post('/order', (req, res, next) => {
-  const {shirt, address} = req.body;
+  const {shirt, address, stripeToken, email} = req.body;
 
   // CREATE DESIGNID
   const r = request.post({
@@ -66,10 +68,10 @@ app.post('/order', (req, res, next) => {
     json: true,
   }, (err, response) => {
 
-    console.log('DESIGN', response.body);
     if (err) {
       return next(err);
     } else if (response.body.statusCode > 300) {
+      console.log('[Design error]', response.body);
       return next(response.body);
     } else {
 
@@ -91,32 +93,50 @@ app.post('/order', (req, res, next) => {
         json: true,
       }, (err, response) => {
 
-        console.log('QUOTE', response.body);
         if (err) {
           return next(err);
         } else if (response.body.statusCode > 300 || (response.body.orderIssues && response.body.orderIssues.length)) {
+          console.log('[Quote error]', response.body);
           return next(response.body);
         } else {
 
-          // CREATE ORDERID
-          request.post({
-            url: `${SP_API}order`,
-            json: true,
-            auth,
-            body: {
-              orderToken: response.body.orderToken,
-            }
-          }, (err, response) => {
+          // CREATE PAYMENT
+          stripe.charges.create({
+            amount: 2250,
+            currency: 'usd',
+            card: stripeToken,
+            receipt_email: email,
+            description: `A datetime shirt (ID: ${response.body.orderToken})`,
+          }, (err, charge) => {
 
-            console.log('ORDER', response.body);
             if (err) {
+              console.log('[Stripe error]', err);
               return next(err);
-            } else if (response.body.statusCode > 300) {
-              return next(response.body);
             } else {
-              res.json({order: response.body.orderId});
+
+              // CREATE ORDERID
+              request.post({
+                url: `${SP_API}order`,
+                json: true,
+                auth,
+                body: {
+                  orderToken: response.body.orderToken,
+                }
+              }, (err, response) => {
+
+                console.log('ORDER', response.body);
+                if (err) {
+                  return next(err);
+                } else if (response.body.statusCode > 300) {
+                  console.log('[Order error]', response.body);
+                  return next(response.body);
+                } else {
+                  res.json({order: response.body.orderId});
+                }
+              });
             }
           });
+
         }
       });
     }

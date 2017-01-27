@@ -3,6 +3,8 @@ import {FormGroup, FormControl, HelpBlock, ControlLabel, Radio, Button, Glyphico
 import CheckoutForm from './CheckoutForm';
 import './Checkout.css';
 
+const STRIPE_KEY = process.env.NODE_ENV === 'production' ? 'pk_live_i8dM4Z7Z9yHAry8CUyfG2zzu' : 'pk_test_qCMrlL2cgZqc4jlUQH6WEyBS';
+
 export default class extends React.Component {
   static propTypes = {
     onStyleChange: React.PropTypes.func.isRequired,
@@ -20,7 +22,7 @@ export default class extends React.Component {
     this.setupStripe();
   }
   setupStripe() {
-    this._stripe = Stripe('pk_test_pn9edQ1LOK6zMJnLd9zYzqb2'); // eslint-disable-line
+    this._stripe = Stripe(STRIPE_KEY); // eslint-disable-line
     this._cardField = this._stripe.elements().create('card', {
       classes: {
         focus: 'is-focused',
