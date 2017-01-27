@@ -8,7 +8,7 @@
   "dependencies": {
     "bootstrap": "^3.3.7",
     "mdbootstrap": "^4.3.0",
-    "micro": "^6.2.1",
+    "express": "^4.14.0",
     "moment": "^2.17.1",
     "react": "^15.4.2",
     "react-bootstrap": "^0.30.7",
@@ -18,6 +18,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "node server"
   }
 }
