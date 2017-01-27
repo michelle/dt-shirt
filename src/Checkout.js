@@ -10,12 +10,14 @@ export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      address_line1: '',
-      address_line2: '',
-      address_state: '',
-      address_zip: '',
+      address1: '',
+      address2: '',
+      state: '',
+      city: '',
+      zip: '',
       style: 'fitted',
       size: 'M',
+      disabled: false,
     };
 
     this._stripe = Stripe('pk_test_pn9edQ1LOK6zMJnLd9zYzqb2'); // eslint-disable-line
@@ -27,6 +29,9 @@ export default class extends React.Component {
       style: {
         base: {
           lineHeight: '20px',
+          fontSize: '16px',
+          fontSmoothing: 'antialiased',
+          fontFamily: 'Helvetica Neue, Helvetica, sans-serif',
         },
         invalid: {
           color: '#a94442',
@@ -48,12 +53,36 @@ export default class extends React.Component {
   }
   handleSubmit = (ev) => {
     ev.preventDefault();
-    fetch('http://localhost:3000/test', {
-      method: 'POST',
-      body: {
-        test: true,
-      },
-    }).then((res) => console.log(res));
+    this.setState({disabled: true});
+    this._stripe.createToken(this._cardField).then((token) => {
+      const {size, style, city, state, address1, address2, zip} = this.state;
+      return fetch('http://localhost:3000/order', {
+        method: 'POST',
+        body: {
+          shirt: {
+            artwork: document.querySelector('canvas').toDataURL(),
+            style,
+            size,
+          },
+          stripeToken: token.id,
+          address: {
+            city,
+            state,
+            address1,
+            address2,
+            zip,
+          },
+        },
+      });
+    }).then((res) => {
+      // TODO
+      console.log(res);
+      this.setState({disabled: false});
+    }, (err) => {
+      // TODO
+      console.log(err);
+      this.setState({disabled: false});
+    });
   }
 
   renderStyles() {
@@ -82,6 +111,7 @@ export default class extends React.Component {
     );
   }
   render() {
+    const {disabled} = this.state;
     return (
       <form className="App-form" onSubmit={this.handleSubmit}>
         {this.renderStyles()}
@@ -90,40 +120,56 @@ export default class extends React.Component {
           <ControlLabel>Shipping address</ControlLabel>
           <FormControl
             type="text"
-            value={this.state.address_line1}
+            name="address1"
+            value={this.state.address1}
             placeholder="185 Berry St"
-            onChange={this.handleChange('address_line1')}
+            onChange={this.handleChange('address1')}
           />
         </FormGroup>
         <FormGroup>
           <FormControl
             type="text"
-            value={this.state.address_line2}
+            name="address2"
+            value={this.state.address2}
             placeholder="Suite 550"
-            onChange={this.handleChange('address_line2')}
+            onChange={this.handleChange('address2')}
           />
         </FormGroup>
         <FormGroup>
           <FormControl
             type="text"
-            value={this.state.address_state}
+            name="city"
+            value={this.state.city}
             placeholder="San Francisco"
-            onChange={this.handleChange('address_state')}
+            onChange={this.handleChange('city')}
           />
         </FormGroup>
         <FormGroup>
           <FormControl
             type="text"
-            value={this.state.address_zip}
+            name="state"
+            value={this.state.state}
+            placeholder="CA"
+            onChange={this.handleChange('state')}
+          />
+        </FormGroup>
+        <FormGroup>
+          <FormControl
+            type="text"
+            name="zip"
+            value={this.state.zip}
             placeholder="94107"
-            onChange={this.handleChange('address_zip')}
+            onChange={this.handleChange('zip')}
           />
         </FormGroup>
         <FormGroup controlId="card" validationState={this.state.error && 'error'}>
           <ControlLabel>Card details</ControlLabel>
           <div className="Stripe form-control" id="card" />
         </FormGroup>
-        <Button type="submit" bsStyle="success" bsSize="large" block><Glyphicon glyph="shopping-cart" />{' '}Buy</Button>
+        <Button type="submit" bsStyle="success" bsSize="large" disabled={disabled} block>
+          <Glyphicon glyph={disabled ? 'refresh' : 'shopping-cart'} bsClass={disabled ? 'spinning glyphicon' : 'glyphicon'} />{' '}
+          {disabled ? 'Processing...' : 'Buy now'}
+        </Button>
       </form>
     );
   }

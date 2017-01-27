@@ -1,10 +1,33 @@
 import React from 'react';
-import moment from 'moment';
+// import moment from 'moment';
+import {Label, Glyphicon} from 'react-bootstrap';
+
 import './Shirt.css';
 
 export default class extends React.Component {
   static propTypes = {
     shirtStyle: React.PropTypes.oneOf(['fitted', 'unisex']).isRequired,
+  }
+
+  componentDidMount() {
+    const canvas = document.createElement('canvas');
+    canvas.style.width = '33%';
+    canvas.style.height = 'auto';
+    const ctx = canvas.getContext('2d');
+    ctx.font = "37px 'Chivo'";
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = 'white';
+    ctx.fillText(new Date().getTime() + '', 0, 0);
+    document.querySelector('.Shirt-time-d').appendChild(canvas);
+
+    const cb = () => {
+      window.requestAnimationFrame(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillText(new Date().getTime() + '', 0, 0);
+        cb();
+      });
+    }
+    cb();
   }
 
   renderMs() {
@@ -14,9 +37,7 @@ export default class extends React.Component {
   renderTime() {
     return (
       <div className="Shirt-time">
-        <div className="Shirt-time-s">
-          {new Date().getTime()}
-        </div>
+        <div className="Shirt-time-d" />
       </div>
     );
     /*
@@ -56,6 +77,11 @@ export default class extends React.Component {
             {this.renderPath()}
           </g>
         </svg>
+        <div className="Shirt-price">
+          <h2>
+            <Label bsStyle="primary"><strike>$25.00</strike> $19.85</Label>
+          </h2>
+        </div>
       </div>
     );
   }

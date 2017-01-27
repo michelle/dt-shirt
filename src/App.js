@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Checkout from './Checkout';
 import Shirt from './Shirt';
-import {Grid, Row, Col, PageHeader} from 'react-bootstrap';
+import {Grid, Row, Col, PageHeader, Glyphicon} from 'react-bootstrap';
 
 class App extends Component {
   constructor(props) {
@@ -19,6 +19,8 @@ class App extends Component {
     return (
       <Grid>
         <PageHeader>
+          <Glyphicon glyph="time" />
+          {' '}
           dt-shirt
           {' '}
           <small>
@@ -26,10 +28,10 @@ class App extends Component {
           </small>
         </PageHeader>
         <Row>
-        <Col sm={7}>
+        <Col md={7} sm={6}>
           <Shirt shirtStyle={this.state.style} />
         </Col>
-        <Col sm={5}>
+        <Col md={5} sm={6}>
           <Checkout onStyleChange={this.handleStyleChange} />
         </Col>
         </Row>

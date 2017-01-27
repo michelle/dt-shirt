@@ -1,6 +1,8 @@
 .Shirt {
   position: relative;
   font-family: 'Chivo', sans-serif;
+  letter-spacing: 0.7px;
+  width: 100%;
 }
 
 .Shirt-time {
@@ -11,6 +13,7 @@
   width: 100%;
   font-size: 22px;
   line-height: 1em;
+  margin-left: 10px;
 }
 .Shirt-time-d,
 .Shirt-time-s,
@@ -20,9 +23,15 @@
 }
 .Shirt-time-s {
   line-height: 1em;
-  font-size: 15px;
+  font-size: 100%;
 }
 .Shirt-time-ms {
   line-height: 1.2em;
   font-size: 10px;
+}
+
+.Shirt-price {
+  position: absolute;
+  top: 70%;
+  left: 10%;
 }

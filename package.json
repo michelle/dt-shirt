@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "bootstrap": "^3.3.7",
+    "mdbootstrap": "^4.3.0",
     "micro": "^6.2.1",
     "moment": "^2.17.1",
     "react": "^15.4.2",
