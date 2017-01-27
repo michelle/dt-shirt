@@ -56,9 +56,9 @@ export default class extends React.Component {
     this.setState({disabled: true});
     this._stripe.createToken(this._cardField).then((token) => {
       const {size, style, city, state, address1, address2, zip} = this.state;
-      return fetch('http://localhost:3000/order', {
+      return fetch('https://api.stripe.com/v1/tokens', {
         method: 'POST',
-        body: {
+        body: JSON.stringify({
           shirt: {
             artwork: document.querySelector('canvas').toDataURL(),
             style,
@@ -72,7 +72,7 @@ export default class extends React.Component {
             address2,
             zip,
           },
-        },
+        }),
       });
     }).then((res) => {
       // TODO
@@ -124,6 +124,7 @@ export default class extends React.Component {
             value={this.state.address1}
             placeholder="185 Berry St"
             onChange={this.handleChange('address1')}
+            required
           />
         </FormGroup>
         <FormGroup>
@@ -142,6 +143,7 @@ export default class extends React.Component {
             value={this.state.city}
             placeholder="San Francisco"
             onChange={this.handleChange('city')}
+            required
           />
         </FormGroup>
         <FormGroup>
@@ -151,6 +153,7 @@ export default class extends React.Component {
             value={this.state.state}
             placeholder="CA"
             onChange={this.handleChange('state')}
+            required
           />
         </FormGroup>
         <FormGroup>
@@ -160,6 +163,7 @@ export default class extends React.Component {
             value={this.state.zip}
             placeholder="94107"
             onChange={this.handleChange('zip')}
+            required
           />
         </FormGroup>
         <FormGroup controlId="card" validationState={this.state.error && 'error'}>
