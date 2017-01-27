@@ -1,0 +1,28 @@
+.Shirt {
+  position: relative;
+  font-family: 'Chivo', sans-serif;
+}
+
+.Shirt-time {
+  position: absolute;
+  top: 20%;
+  color: #fff;
+  font-weight: 500;
+  width: 100%;
+  font-size: 22px;
+  line-height: 1em;
+}
+.Shirt-time-d,
+.Shirt-time-s,
+.Shirt-time-ms {
+  text-align: center;
+  margin: 0 auto;
+}
+.Shirt-time-s {
+  line-height: 1em;
+  font-size: 15px;
+}
+.Shirt-time-ms {
+  line-height: 1.2em;
+  font-size: 10px;
+}
