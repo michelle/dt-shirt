@@ -31,10 +31,10 @@ class App extends Component {
           </h2>
         </PageHeader>
         <Row>
-        <Col sm={6}>
+        <Col md={7} sm={6}>
           <Shirt shirtStyle={this.state.style} disabled={this.state.checkingOut} />
         </Col>
-        <Col sm={6}>
+        <Col md={5} sm={6}>
           <Checkout onCheckout={this.handleCheckout(true)} onComplete={this.handleCheckout(false)} onStyleChange={this.handleStyleChange} />
         </Col>
         </Row>
