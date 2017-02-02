@@ -101,7 +101,6 @@ button {
   display: block;
   background: black;
   color: white;
-  border-radius: 0 0 15px 15px;
   border: 0;
   margin-top: 15px;
   margin-bottom: 50px;
@@ -136,21 +135,28 @@ button:active {
   width: 100%;
 }
 
+.radio {
+  text-align: center;
+}
 .radio input {
   opacity: 0;
 }
 
 .radio input:checked + label {
-  border-radius: 15px 15px 0 0;
   background-color: black;
-  border-bottom-color: black;
   color: white;
 }
 
 .radio label {
-  font-size: 19px;
-  text-align: center;
-  padding: 0;
-  border-bottom: 1px solid #a4d5ff;
+  background-color: #a4d5ff;
+  width: 100%;
+  display: inline-block;
+  padding: 8px 14px;;
   margin: 0;
+}
+button, label {
+  transition: opacity 200ms ease-in-out;
+}
+button:hover, label:hover {
+  opacity: 0.8;
 }
