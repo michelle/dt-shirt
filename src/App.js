@@ -23,19 +23,18 @@ class App extends Component {
     return (
       <Grid>
         <PageHeader>
-          <Glyphicon glyph="time" />
-          {' '}
-          dt-shirt
-          {' '}
-          <small>
-            a t-shirt with the current datetime.
-          </small>
+          datetime.store
+          <h2>
+            we sell a t-shirt with the current datetime.
+            {' '}
+            <Glyphicon glyph="time" />
+          </h2>
         </PageHeader>
         <Row>
-        <Col md={7} sm={6}>
+        <Col sm={6}>
           <Shirt shirtStyle={this.state.style} disabled={this.state.checkingOut} />
         </Col>
-        <Col md={5} sm={6}>
+        <Col sm={6}>
           <Checkout onCheckout={this.handleCheckout(true)} onComplete={this.handleCheckout(false)} onStyleChange={this.handleStyleChange} />
         </Col>
         </Row>

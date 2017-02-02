@@ -35,3 +35,7 @@
   top: 70%;
   left: 10%;
 }
+
+.Shirt-price .label {
+  font-weight: 300 !important;
+}

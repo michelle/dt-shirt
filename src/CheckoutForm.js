@@ -1,5 +1,5 @@
 import React from 'react';
-import {FormGroup, FormControl, HelpBlock, ControlLabel, Radio, Button, Glyphicon, ListGroup, ListGroupItem} from 'react-bootstrap';
+import {label, HelpBlock, ControlLabel, Radio, Button, Glyphicon, ListGroup, ListGroupItem} from 'react-bootstrap';
 
 export default class extends React.Component {
   constructor(props) {
@@ -51,27 +51,32 @@ export default class extends React.Component {
   }
   renderStyles() {
     return (
-      <FormGroup controlId="style">
-        <ControlLabel>Shirt style</ControlLabel>
-        {[['fitted', 'Fitted (Next Level Boyfriend Tee)'], ['unisex', 'Unisex (Next Level Crew)']].map((style) => (
-          <Radio key={style[0]} name="style" value={style[0]} checked={this.state.style === style[0]} onChange={this.handleChange('style')}>
-            {style[1]}
-          </Radio>
+      <div className="styles">
+        {[['fitted', 'Fitted'], ['unisex', 'Unisex']].map((style) => (
+          <div className="radio">
+            <input id={style[0]} type="radio" key={style[0]} name="style" value={style[0]} onChange={this.handleChange('style')} checked={this.state.style === style[0]}>
+            </input>
+            <label htmlFor={style[0]}>
+              {style[1]}
+            </label>
+          </div>
         ))}
-      </FormGroup>
+      </div>
     );
   }
   renderSizes() {
     return (
-      <FormGroup controlId="size">
-        <ControlLabel>Shirt size</ControlLabel>
-        <br />
+      <div className="sizes">
         {['S', 'M', 'L', 'XL'].map((size) => (
-          <Radio key={size} name="size" value={size} onChange={this.handleChange('size')} checked={this.state.size === size} inline>
-            {size}
-          </Radio>
+          <div className="radio">
+            <input id={size} type="radio" key={size} name="size" value={size} onChange={this.handleChange('size')} checked={this.state.size === size}>
+            </input>
+            <label htmlFor={size}>
+              {size}
+            </label>
+          </div>
         ))}
-      </FormGroup>
+      </div>
     );
   }
   render() {
@@ -87,9 +92,9 @@ export default class extends React.Component {
         ) : ''}
         {this.renderStyles()}
         {this.renderSizes()}
-        <FormGroup controlId="address">
-          <ControlLabel>Shipping address</ControlLabel>
-          <FormControl
+        <label>
+          <input
+            className={`field ${this.state.name ? '' : 'is-empty'}`}
             type="text"
             name="name"
             autoComplete="name"
@@ -98,9 +103,11 @@ export default class extends React.Component {
             onChange={this.handleChange('name')}
             required
           />
-        </FormGroup>
-        <FormGroup>
-          <FormControl
+          <span><span>Name</span></span>
+        </label>
+        <label>
+          <input
+            className={`field ${this.state.address1 ? '' : 'is-empty'}`}
             type="text"
             name="address1"
             value={this.state.address1}
@@ -108,18 +115,22 @@ export default class extends React.Component {
             onChange={this.handleChange('address1')}
             required
           />
-        </FormGroup>
-        <FormGroup>
-          <FormControl
+          <span><span>Shipping address</span></span>
+        </label>
+        <label>
+          <input
+            className={`field ${this.state.address2 ? '' : 'is-empty'}`}
             type="text"
             name="address2"
             value={this.state.address2}
             placeholder="Suite 550"
             onChange={this.handleChange('address2')}
           />
-        </FormGroup>
-        <FormGroup>
-          <FormControl
+          <span><span>Apartment or Suite (optional)</span></span>
+        </label>
+        <label>
+          <input
+            className={`field ${this.state.city ? '' : 'is-empty'}`}
             type="text"
             name="city"
             value={this.state.city}
@@ -127,9 +138,11 @@ export default class extends React.Component {
             onChange={this.handleChange('city')}
             required
           />
-        </FormGroup>
-        <FormGroup>
-          <FormControl
+          <span><span>City</span></span>
+        </label>
+        <label>
+          <input
+            className={`field ${this.state.state ? '' : 'is-empty'}`}
             type="text"
             name="state"
             value={this.state.state}
@@ -137,9 +150,11 @@ export default class extends React.Component {
             onChange={this.handleChange('state')}
             required
           />
-        </FormGroup>
-        <FormGroup>
-          <FormControl
+          <span><span>State</span></span>
+        </label>
+        <label>
+          <input
+            className={`field ${this.state.zip ? '' : 'is-empty'}`}
             type="text"
             name="zip"
             value={this.state.zip}
@@ -147,10 +162,11 @@ export default class extends React.Component {
             onChange={this.handleChange('zip')}
             required
           />
-        </FormGroup>
-        <FormGroup controlId="email">
-          <ControlLabel>Email (for receipt)</ControlLabel>
-          <FormControl
+          <span><span>Postal code</span></span>
+        </label>
+        <label>
+          <input
+            className={`field ${this.state.email ? '' : 'is-empty'}`}
             type="email"
             name="email"
             value={this.state.email}
@@ -158,16 +174,19 @@ export default class extends React.Component {
             onChange={this.handleChange('email')}
             required
           />
-        </FormGroup>
-        <FormGroup controlId="card" validationState={error && 'error'}>
-          <ControlLabel>Card details</ControlLabel>
-          <div className="Stripe form-control" id="card" />
-          <HelpBlock>{error && error.message}</HelpBlock>
-        </FormGroup>
-        <Button type="submit" bsStyle="primary" bsSize="large" disabled={disabled} block>
+          <span><span>Email (for receipt)</span></span>
+        </label>
+        <label style={{display: 'block'}}>
+          <div
+            className="Stripe field"
+            id="card"
+          />
+          <span><span>{error ? error.message : 'Card details'}</span></span>
+        </label>
+        <button type="submit" disabled={disabled}>
           <Glyphicon glyph={disabled ? 'refresh' : 'shopping-cart'} bsClass={disabled ? 'spinning glyphicon' : 'glyphicon'} />{' '}
           {disabled ? 'Processing...' : 'Buy now'}
-        </Button>
+        </button>
       </form>
     );
   }

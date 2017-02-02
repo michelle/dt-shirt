@@ -26,18 +26,18 @@ export default class extends React.Component {
     this._stripe = Stripe(STRIPE_KEY); // eslint-disable-line
     this._cardField = this._stripe.elements().create('card', {
       classes: {
+        empty: 'is-empty',
         focus: 'is-focused',
         invalid: 'is-invalid',
       },
       style: {
         base: {
-          lineHeight: '20px',
+          lineHeight: '28px',
+          placeholderColor: '#ccc',
           fontSize: '16px',
+          fontWeight: 400,
           fontSmoothing: 'antialiased',
           fontFamily: 'Helvetica Neue, Helvetica, sans-serif',
-        },
-        invalid: {
-          color: '#a94442',
         },
       },
     });
@@ -49,15 +49,19 @@ export default class extends React.Component {
   handleSubmit = (data) => {
     this.setState({disabled: true});
     this.props.onCheckout();
-    this._stripe.createToken(this._cardField).then((token) => {
-      return fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({...data, stripeToken: token.id}),
-      });
+    this._stripe.createToken(this._cardField).then(({token, error}) => {
+      if (token) {
+        return fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({...data, stripeToken: token.id}),
+        });
+      } else {
+        throw error;
+      }
     }).then((res) => {
       // TODO
       return res.json();
@@ -87,10 +91,10 @@ export default class extends React.Component {
         <p>
           You should receive an email shortly with your order confirmation number.
         </p>
-        <Button onClick={this.handleReset} bsStyle="primary" bsSize="large">
+        <button onClick={this.handleReset}>
           <Glyphicon glyph="heart" />{' '}
           Get another shirt
-        </Button>
+        </button>
       </div>
     );
   }
